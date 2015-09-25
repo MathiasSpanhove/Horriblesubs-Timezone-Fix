@@ -15,15 +15,16 @@ if(window.location.href.indexOf("schedule") > -1) {
     init(el2);
 }
 
-// hide timer
+// go to https://www.timeanddate.com/clocks/free.html make your own clock and paste the src below (delete hide timer above)
+var src = '';
 var schedule = document.getElementsByClassName("textwidget");
-schedule[2].childNodes[0].style.display = 'none';
-/* change timer
-var timer = schedule[2].childNodes;
-timer[0].src = 'http://free.timeanddate.com/clock/i4twj1ad/n48/tlbe14/th1/ta1';
-timer[0].width = '100';
-*/
-
+if (src == '') {
+    schedule[2].childNodes[0].style.display = 'none';
+} else {
+    var timer = schedule[2].childNodes;
+    timer[0].src = src;
+    timer[0].width = '100';
+}
 
 function init(element) {     
     element.innerHTML = element.innerHTML.replace(/\d\d:\d\d/g, function(s) {    
