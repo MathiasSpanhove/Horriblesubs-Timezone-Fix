@@ -15,8 +15,10 @@ if(window.location.href.indexOf("schedule") > -1) {
     init(el2);
 }
 
-/* change timer
+// hide timer
 var schedule = document.getElementsByClassName("textwidget");
+schedule[2].childNodes[0].style.display = 'none';
+/* change timer
 var timer = schedule[2].childNodes;
 timer[0].src = 'http://free.timeanddate.com/clock/i4twj1ad/n48/tlbe14/th1/ta1';
 timer[0].width = '100';
