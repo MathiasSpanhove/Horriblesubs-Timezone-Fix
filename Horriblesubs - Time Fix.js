@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Horrible Subs Time Zone Fix
-// @version      1.0.0
+// @version      1.0.2
 // @description  Release time for your timezone
 // @author       Cpt_Mathix
 // @match        *://horriblesubs.info/*
@@ -15,7 +15,7 @@ if(window.location.href.indexOf("schedule") > -1) {
     init(el2);
 }
 
-// go to https://www.timeanddate.com/clocks/free.html make your own clock and paste the src below (delete hide timer above)
+// go to https://www.timeanddate.com/clocks/free.html make your own clock and paste the src below
 var src = '';
 var schedule = document.getElementsByClassName("textwidget");
 if (src == '') {
