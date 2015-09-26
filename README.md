@@ -1,5 +1,5 @@
 # Horriblesubs---Timezone-Fix
-Changes the time on horriblesubs to your own
+Changes the time on horriblesubs to your own local time
 
 You can also change the clock displayed above the schedule by going to [timeanddate.com](https://www.timeanddate.com/clocks/free.html) and pasting the source url inside the script.
 
