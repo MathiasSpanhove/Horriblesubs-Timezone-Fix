@@ -1,13 +1,14 @@
 // ==UserScript==
 // @name         Horriblesubs Time Zone Fix
-// @version      1.3.0
+// @version      1.3.1
 // @description  Release time for your timezone
 // @author       Cpt_Mathix & Hoshiburst
 // @match        http://horriblesubs.info/*
-// @require      https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js
-// @require      https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.3.0/moment-timezone.min.js
+// @require      https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js
+// @require      https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.14/moment-timezone-with-data-2012-2022.min.js
 // @license      GPL version 2 or any later version; http://www.gnu.org/licenses/gpl-2.0.txt
 // @grant        none
+// @noframes
 // @namespace https://greasyfork.org/users/16080
 // ==/UserScript==
 
@@ -17,12 +18,8 @@ Number.prototype.mod = function(n) {
     return (( this % n) + n) % n;
 };
 
-// The data below is for Los Angeles (same timezone as HS servers) between 2016 and ????.
-moment.tz.add('America/Los_Angeles|PST PDT PWT PPT|80 70 70 70|010102301010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010|-261q0 1nX0 11B0 1nX0 SgN0 8x10 iy0 5Wp0 1Vb0 3dB0 WL0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1o10 11z0 1qN0 WL0 1qN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1cN0 1cL0 1cN0 1cL0 s10 1Vz0 LB0 1BX0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|15e6');
-
 // Current day in LA and locally
-var LA_day = parseInt(moment().tz('America/Los_Angeles').format('d'));
-var local_day = parseInt(moment().format('d'));
+var local_day = parseInt(moment().local().format('d'));
 
 // Difference between local time and LA time
 var difference = parseInt(moment().local().format('ZZ')) - parseInt(moment().tz('America/Los_Angeles').format('ZZ'));
@@ -73,14 +70,14 @@ function getFullSchedule(element, difference) {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
             var container = document.implementation.createHTMLDocument().documentElement;
             container.innerHTML = xmlHttp.responseText;
-            createSchedule(container, element, difference);
+            createTodaysSchedule(container, element, difference);
         }
     };
     xmlHttp.open('GET', 'http://horriblesubs.info/release-schedule/', true); // true for asynchronous
     xmlHttp.send(null);
 }
 
-function createSchedule(schedule, element, difference) {
+function createTodaysSchedule(schedule, element, difference) {
     schedule = schedule.querySelector('.entry-content');
 
     // Eg. If it's Monday in Sydney, difference is +18 so we want to
@@ -105,17 +102,17 @@ function createSchedule(schedule, element, difference) {
     for (var i = 0; i < todaySchedule.children.length; i++) {
         var anime = todaySchedule.children[i];
         if (anime.classList.contains('firstday')) {
-            convertSidebarTime(anime, first_day);
+            convertTodaysScheduleTime(anime, first_day);
         } else {
-            convertSidebarTime(anime, second_day);
+            convertTodaysScheduleTime(anime, second_day);
         }
     }
 }
 
-function convertSidebarTime(anime, day) {
+function convertTodaysScheduleTime(anime, day) {
     anime.innerHTML = anime.innerHTML.replace(/\d\d:\d\d/g, function(s) {
         var selected_time = moment.tz(day + ' ' + s, 'd HH:mm','America/Los_Angeles');
-        var converted_time = moment(selected_time).local();
+        var converted_time = selected_time.local();
         if (parseInt(converted_time.format('d')) !== local_day) {
             anime.style.display = 'none';
             return null;
@@ -128,7 +125,7 @@ function convertSidebarTime(anime, day) {
 function convertFullReleaseScheduleTime(schedule, day) {
     schedule.innerHTML = schedule.innerHTML.replace(/\d\d:\d\d/g, function(s) {
         var selected_time = moment.tz(day + ' ' + s, 'd HH:mm','America/Los_Angeles');
-        var converted_time = moment(selected_time).local();
+        var converted_time = selected_time.local();
         return converted_time.format('ddd HH:mm');
     });
 }
